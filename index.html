@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SECRET MESSAGE</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Ambient floating particles sit behind every screen, all game long -->
+  <div class="particle-field" id="particleField" aria-hidden="true"></div>
+
+  <main id="app">
+
+    <!-- ============================================================
+         SCREEN 1 — TITLE SCREEN
+    ============================================================= -->
+    <section class="screen active" id="screen-title">
+      <div class="title-glow" aria-hidden="true"></div>
+      <div class="screen-content">
+        <p class="eyebrow">Completa la misión y desbloquea el mensaje secreto!</p>
+        <h1 class="game-title"><span>SECRET MESSAGE</span></h1>
+        <button class="btn btn-primary btn-large" id="btnStart">
+          <span>START</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 2 — MISSION BRIEFING
+    ============================================================= -->
+    <section class="screen" id="screen-briefing">
+      <div class="screen-content card">
+        <p class="eyebrow">transmisión entrante</p>
+        <h2 class="section-title">INSTRUCCIONES DE LA MISIÓN...</h2>
+        <div class="briefing-divider" aria-hidden="true"></div>
+        <p class="briefing-text">
+          Tu objetivo es simple.<br>
+          Recolecta todas las estrellas repartidas en la pantalla para obtener el código de acceso secreto.<br>
+          Solo así podrás desbloquear el mensaje.
+        </p>
+        <button class="btn btn-primary" id="btnBegin">
+          <span>BEGIN MISSION</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 3 — MINI GAME (STAR COLLECTION)
+    ============================================================= -->
+    <section class="screen" id="screen-game">
+      <div class="game-hud">
+        <p class="hud-label">Estrellas Recolectadas</p>
+        <p class="hud-counter"><span id="starCount">0</span> / <span id="starTotal">15</span></p>
+      </div>
+      <div class="star-field" id="starField">
+        <!-- Stars are injected here by script.js -->
+      </div>
+      <!-- Mission Complete overlay, hidden until the last star is caught -->
+      <div class="mission-complete-flash" id="missionCompleteFlash" aria-hidden="true">
+        <p>MISIÓN COMPLETADA</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 4 — REWARD
+    ============================================================= -->
+    <section class="screen" id="screen-reward">
+      <div class="screen-content card">
+        <div class="reward-badge" aria-hidden="true">&#9733;</div>
+        <h2 class="section-title">MISIÓN COMPLETADA</h2>
+        <p class="reward-subtitle">Felicitaciones! Código de Acceso Obtenido</p>
+        <div class="access-code" id="accessCodeDisplay">110226</div>
+        <button class="btn btn-primary" id="btnContinueToPin">
+          <span>Continue</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 5 — PIN ENTRY
+    ============================================================= -->
+    <section class="screen" id="screen-pin">
+      <div class="screen-content">
+        <p class="eyebrow">punto de control de seguridad</p>
+        <h2 class="section-title">INGRESA EL CÓDIGO DE ACCESO</h2>
+
+        <!-- Six PIN indicator circles -->
+        <div class="pin-dots" id="pinDots">
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+          <span class="pin-dot"></span>
+        </div>
+
+        <p class="pin-message" id="pinMessage">&nbsp;</p>
+
+        <!-- Numeric keypad -->
+        <div class="keypad" id="keypad">
+          <button class="key" data-key="1">1</button>
+          <button class="key" data-key="2">2</button>
+          <button class="key" data-key="3">3</button>
+          <button class="key" data-key="4">4</button>
+          <button class="key" data-key="5">5</button>
+          <button class="key" data-key="6">6</button>
+          <button class="key" data-key="7">7</button>
+          <button class="key" data-key="8">8</button>
+          <button class="key" data-key="9">9</button>
+          <button class="key key-action" id="keyDelete" data-key="delete">&#9003;</button>
+          <button class="key" data-key="0">0</button>
+          <button class="key key-action key-enter" id="keyEnter" data-key="enter">&#10003;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 6 — CONGRATULATIONS / ENVELOPE
+    ============================================================= -->
+    <section class="screen" id="screen-congrats">
+      <div class="screen-content">
+        <h2 class="section-title">¡Felicidades!</h2>
+        <p class="briefing-text">
+          Misión completada con éxito.<br>
+          Has desbloqueado un mensaje.
+        </p>
+
+        <!-- Envelope, click to open -->
+        <div class="envelope-wrap" id="envelopeWrap">
+          <div class="envelope" id="envelope">
+            <div class="envelope-back"></div>
+            <div class="envelope-letter-peek"></div>
+            <div class="envelope-flap"></div>
+            <div class="envelope-seal">&#9825;</div>
+          </div>
+          <p class="envelope-hint" id="envelopeHint">toca el sobre</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SCREEN 7 — THE LETTER
+    ============================================================= -->
+    <section class="screen" id="screen-letter">
+      <div class="letter-paper">
+        <div class="letter-scroll-area">
+          <p class="letter-greeting">Para ti,</p>
+          <p class="letter-body">
+            Este es un texto de ejemplo, .<br><br>
+            Texttextextext.<br><br>
+            texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext
+          </p>
+          <p class="letter-signoff">Hecho especialmente para ti.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

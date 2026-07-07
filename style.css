@@ -1,0 +1,704 @@
+/* =====================================================================
+   MISSION: SECRET MESSAGE — STYLESHEET
+   A soft, indie-game / visual-novel styled mini game.
+   Organized in sections: tokens, base, layout, screens (in order),
+   components, and responsiveness.
+===================================================================== */
+
+/* ---------------------------------------------------------------
+   1. DESIGN TOKENS
+   Dusk-sky palette: deep indigo night, lavender glow, warm blush,
+   soft gold stars, and cream letter paper.
+---------------------------------------------------------------- */
+:root {
+  /* Colors */
+  --bg-deep:        #1B1A3B;   /* deepest night indigo */
+  --bg-mid:         #2E2A5E;   /* mid night indigo */
+  --bg-soft:        #423A78;   /* lighter dusk tone */
+  --lavender:       #B8A6FF;   /* primary accent */
+  --lavender-soft:  #D9CFFF;
+  --gold:           #FFD97D;   /* stars / highlights */
+  --blush:          #FFB4A8;   /* warm secondary accent */
+  --teal:           #7FE7D0;   /* success / correctness */
+  --cream:          #FBF3E7;   /* letter paper */
+  --cream-dark:     #EDE0CC;
+  --ink:            #3A3358;   /* text on cream */
+  --white-soft:     #F5F3FF;
+
+  /* Typography */
+  --font-display: 'Segoe UI Rounded', 'Poppins', ui-rounded, 'Nunito', sans-serif;
+  --font-body: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+
+  /* Shadows */
+  --shadow-soft: 0 10px 30px rgba(15, 12, 40, 0.35);
+  --shadow-glow-lavender: 0 0 40px rgba(184, 166, 255, 0.45);
+  --shadow-glow-gold: 0 0 24px rgba(255, 217, 125, 0.55);
+
+  /* Motion */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-screen: 0.6s;
+}
+
+/* ---------------------------------------------------------------
+   2. RESET & BASE
+---------------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* the game lives on one screen, no page scroll */
+}
+
+body {
+  font-family: var(--font-body);
+  background: radial-gradient(ellipse at top, var(--bg-soft) 0%, var(--bg-deep) 70%);
+  color: var(--white-soft);
+  position: relative;
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  background: none;
+  color: inherit;
+}
+
+/* ---------------------------------------------------------------
+   3. AMBIENT PARTICLE FIELD
+   Soft floating "fireflies" behind every screen for atmosphere.
+---------------------------------------------------------------- */
+.particle-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--lavender-soft);
+  opacity: 0.5;
+  filter: blur(0.5px);
+  animation: floatParticle linear infinite;
+}
+
+@keyframes floatParticle {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-110vh) translateX(20px); opacity: 0; }
+}
+
+/* ---------------------------------------------------------------
+   4. APP / SCREEN SYSTEM
+   Every "screen" occupies the same space; JS toggles .active
+   and .leaving to crossfade between them.
+---------------------------------------------------------------- */
+#app {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.98);
+  transition: opacity var(--transition-screen) var(--ease-soft),
+              transform var(--transition-screen) var(--ease-soft),
+              visibility 0s linear var(--transition-screen);
+}
+
+.screen.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  transition: opacity var(--transition-screen) var(--ease-soft),
+              transform var(--transition-screen) var(--ease-soft),
+              visibility 0s linear 0s;
+}
+
+.screen-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 640px;
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------
+   5. SHARED TEXT & BUTTON STYLES
+---------------------------------------------------------------- */
+.eyebrow {
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--lavender-soft);
+  margin-bottom: 14px;
+  opacity: 0.85;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin-bottom: 18px;
+  color: var(--white-soft);
+}
+
+.briefing-text {
+  font-size: clamp(0.95rem, 2.4vw, 1.15rem);
+  line-height: 1.9;
+  color: var(--lavender-soft);
+  margin-bottom: 34px;
+}
+
+.btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 16px 40px;
+  border-radius: 100px;
+  font-size: 1rem;
+  transition: transform 0.25s var(--ease-soft), box-shadow 0.25s var(--ease-soft);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--lavender) 0%, var(--blush) 100%);
+  color: #2A2350;
+  box-shadow: var(--shadow-glow-lavender);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 0 50px rgba(184, 166, 255, 0.65);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-large {
+  padding: 20px 64px;
+  font-size: 1.2rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border-radius: 28px;
+  padding: 48px 40px;
+  box-shadow: var(--shadow-soft);
+}
+
+/* ---------------------------------------------------------------
+   6. SCREEN 1 — TITLE
+---------------------------------------------------------------- */
+.title-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60vmax;
+  height: 60vmax;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(184, 166, 255, 0.25) 0%, transparent 65%);
+  animation: pulseGlow 6s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.game-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.03em;
+  margin-bottom: 44px;
+  color: var(--white-soft);
+  text-shadow: 0 0 30px rgba(184, 166, 255, 0.5);
+}
+
+.game-title span {
+  background: linear-gradient(135deg, var(--gold), var(--blush));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------------------------------------------------------------
+   7. SCREEN 2 — MISSION BRIEFING
+---------------------------------------------------------------- */
+.briefing-divider {
+  width: 60px;
+  height: 3px;
+  margin: 0 auto 26px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--blush));
+}
+
+/* ---------------------------------------------------------------
+   8. SCREEN 3 — STAR MINI-GAME
+---------------------------------------------------------------- */
+.game-hud {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  padding: 10px 28px;
+  border-radius: 20px;
+}
+
+.hud-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lavender-soft);
+  margin-bottom: 2px;
+}
+
+.hud-counter {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.star-field {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Each star: an emoji-like glyph drawn purely in CSS via a span,
+   given a floating animation and a click-to-collect interaction. */
+.star {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: var(--gold);
+  cursor: pointer;
+  filter: drop-shadow(0 0 10px rgba(255, 217, 125, 0.7));
+  animation: floatStar 3.2s ease-in-out infinite;
+  transition: transform 0.15s var(--ease-soft);
+  user-select: none;
+  background: none;
+}
+
+.star:hover {
+  transform: scale(1.15);
+}
+
+@keyframes floatStar {
+  0%, 100% { transform: translateY(0px) rotate(-4deg); }
+  50%      { transform: translateY(-14px) rotate(4deg); }
+}
+
+/* Collected star: pop + fade + spin away */
+.star.collected {
+  pointer-events: none;
+  animation: collectStar 0.55s var(--ease-soft) forwards;
+}
+
+@keyframes collectStar {
+  0%   { transform: scale(1) rotate(0deg); opacity: 1; }
+  40%  { transform: scale(1.6) rotate(30deg); opacity: 1; }
+  100% { transform: scale(0) rotate(160deg) translateY(-30px); opacity: 0; }
+}
+
+.mission-complete-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(184,166,255,0.35), rgba(27,26,59,0.85));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease-soft);
+}
+
+.mission-complete-flash.show {
+  opacity: 1;
+}
+
+.mission-complete-flash p {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(255, 217, 125, 0.8);
+  animation: missionPop 0.6s var(--ease-soft);
+}
+
+@keyframes missionPop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ---------------------------------------------------------------
+   9. SCREEN 4 — REWARD
+---------------------------------------------------------------- */
+.reward-badge {
+  font-size: 3rem;
+  color: var(--gold);
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 20px rgba(255, 217, 125, 0.7));
+  animation: badgeSpin 1s var(--ease-soft);
+}
+
+@keyframes badgeSpin {
+  0%   { transform: scale(0) rotate(-180deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.reward-subtitle {
+  color: var(--lavender-soft);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}
+
+.access-code {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 9vw, 4rem);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  margin-bottom: 36px;
+  text-shadow: 0 0 30px rgba(255, 217, 125, 0.6);
+}
+
+/* ---------------------------------------------------------------
+   10. SCREEN 5 — PIN ENTRY
+---------------------------------------------------------------- */
+.pin-dots {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 30px 0 14px;
+}
+
+.pin-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--lavender-soft);
+  transition: background 0.2s var(--ease-soft), transform 0.2s var(--ease-soft);
+}
+
+.pin-dot.filled {
+  background: var(--gold);
+  border-color: var(--gold);
+  transform: scale(1.15);
+}
+
+.pin-message {
+  min-height: 24px;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  color: var(--blush);
+  margin-bottom: 10px;
+}
+
+.pin-message.success {
+  color: var(--teal);
+}
+
+/* Shake feedback for an incorrect code */
+.pin-dots.shake {
+  animation: shakeDots 0.45s ease;
+}
+
+@keyframes shakeDots {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-10px); }
+  40%      { transform: translateX(10px); }
+  60%      { transform: translateX(-6px); }
+  80%      { transform: translateX(6px); }
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.key {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--white-soft);
+  transition: transform 0.15s var(--ease-soft), background 0.15s var(--ease-soft);
+}
+
+.key:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.key:active {
+  transform: scale(0.92);
+}
+
+.key-action {
+  background: rgba(255, 180, 168, 0.15);
+  font-size: 1.1rem;
+}
+
+.key-enter {
+  background: linear-gradient(135deg, var(--teal), var(--lavender));
+  color: #1B1A3B;
+}
+
+/* ---------------------------------------------------------------
+   11. SCREEN 6 — CONGRATULATIONS / ENVELOPE
+---------------------------------------------------------------- */
+.envelope-wrap {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.envelope {
+  position: relative;
+  width: 180px;
+  height: 120px;
+  cursor: pointer;
+  animation: envelopeFloat 3.4s ease-in-out infinite;
+}
+
+@keyframes envelopeFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-12px); }
+}
+
+.envelope-back {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--lavender-soft), var(--cream));
+  border-radius: 10px;
+  box-shadow: var(--shadow-soft);
+}
+
+.envelope-letter-peek {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: -6px;
+  height: 90px;
+  background: var(--cream);
+  border-radius: 6px;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.08);
+  transform: translateY(0);
+  transition: transform 0.8s var(--ease-soft);
+  z-index: 1;
+}
+
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 66px;
+  background: linear-gradient(135deg, var(--blush), var(--lavender));
+  clip-path: polygon(0 0, 100% 0, 50% 75%);
+  border-radius: 10px 10px 0 0;
+  transform-origin: top center;
+  transition: transform 0.8s var(--ease-soft);
+  z-index: 2;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.envelope-seal {
+  position: absolute;
+  top: 46px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #7A4B2E;
+  box-shadow: var(--shadow-glow-gold);
+  z-index: 3;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Opened state, triggered via JS by adding .open to #envelope */
+.envelope.open {
+  animation: none;
+}
+
+.envelope.open .envelope-flap {
+  transform: rotateX(180deg);
+}
+
+.envelope.open .envelope-seal {
+  opacity: 0;
+  transform: translateX(-50%) scale(0);
+}
+
+.envelope.open .envelope-letter-peek {
+  transform: translateY(-46px);
+}
+
+.envelope-hint {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--lavender-soft);
+  opacity: 0.8;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
+/* ---------------------------------------------------------------
+   12. SCREEN 7 — THE LETTER
+---------------------------------------------------------------- */
+.letter-paper {
+  width: min(90vw, 560px);
+  max-height: 82vh;
+  background:
+    repeating-linear-gradient(
+      var(--cream) 0px, var(--cream) 27px,
+      var(--cream-dark) 28px, var(--cream) 29px
+    );
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  padding: 40px 36px;
+  color: var(--ink);
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px) scale(0.97);
+  animation: letterReveal 0.9s var(--ease-soft) forwards;
+  animation-delay: 0.15s;
+}
+
+@keyframes letterReveal {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.letter-scroll-area {
+  max-height: calc(82vh - 80px);
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.letter-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.letter-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--lavender-soft);
+  border-radius: 10px;
+}
+
+.letter-greeting {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: var(--ink);
+}
+
+.letter-body {
+  font-size: 1.02rem;
+  line-height: 2;
+  margin-bottom: 30px;
+}
+
+.letter-signoff {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  text-align: right;
+  color: var(--blush);
+  font-size: 1.05rem;
+}
+
+/* ---------------------------------------------------------------
+   13. RESPONSIVE ADJUSTMENTS
+---------------------------------------------------------------- */
+@media (max-width: 520px) {
+  .keypad {
+    grid-template-columns: repeat(3, 62px);
+    gap: 12px;
+  }
+  .key {
+    width: 62px;
+    height: 62px;
+    font-size: 1.1rem;
+  }
+  .card {
+    padding: 36px 24px;
+  }
+  .envelope {
+    width: 150px;
+    height: 100px;
+  }
+  .letter-paper {
+    padding: 28px 22px;
+  }
+}
+
+/* ---------------------------------------------------------------
+   14. REDUCED MOTION SUPPORT
+---------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
